@@ -1,0 +1,161 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "covidadf-01"
+		},
+		"ls_adls_covidreportingdl_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_adls_covidreportingdl'"
+		},
+		"ls_asa_covidreportingsa_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_asa_covidreportingsa'"
+		},
+		"ls_adls_covidreportingdl_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://covidanalyticsadls.dfs.core.windows.net"
+		},
+		"ls_http_ecdc_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "@{linkedService().baseurl}"
+		},
+		"tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_relativeurl": {
+			"type": "string",
+			"defaultValue": "covid19/nationalcasedeath/csv/data.csv"
+		},
+		"tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_filename": {
+			"type": "string",
+			"defaultValue": "cases_deaths.csv"
+		},
+		"tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_baseurl": {
+			"type": "string",
+			"defaultValue": "https://opendata.ecdc.europa.eu"
+		},
+		"tr_country_response_properties_pl_ingest_ecdc_data_parameters_relativeurl": {
+			"type": "string",
+			"defaultValue": "/sites/default/files/documents/response_graphs_data_2021-08-26.csv"
+		},
+		"tr_country_response_properties_pl_ingest_ecdc_data_parameters_filename": {
+			"type": "string",
+			"defaultValue": "country_response.csv"
+		},
+		"tr_country_response_properties_pl_ingest_ecdc_data_parameters_baseurl": {
+			"type": "string",
+			"defaultValue": "https://www.ecdc.europa.eu"
+		},
+		"tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_relativeurl": {
+			"type": "string",
+			"defaultValue": "covid19/hospitalicuadmissionrates/csv/data.csv"
+		},
+		"tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_filename": {
+			"type": "string",
+			"defaultValue": "hospital_admission.csv"
+		},
+		"tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_baseurl": {
+			"type": "string",
+			"defaultValue": "https://opendata.ecdc.europa.eu"
+		},
+		"tr_publish_daily_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/adce1e13-7093-42b9-a4cc-d087ea2fa122/resourceGroups/covidanalyticsrg/providers/Microsoft.Storage/storageAccounts/covidstoragegh01"
+		},
+		"tr_testing_properties_pl_ingest_ecdc_data_parameters_relativeurl": {
+			"type": "string",
+			"defaultValue": "covid19/testing/csv/data.csv"
+		},
+		"tr_testing_properties_pl_ingest_ecdc_data_parameters_filename": {
+			"type": "string",
+			"defaultValue": "testing.csv"
+		},
+		"tr_testing_properties_pl_ingest_ecdc_data_parameters_baseurl": {
+			"type": "string",
+			"defaultValue": "https://opendata.ecdc.europa.eu"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "covidadf-01_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ls_adls_covidreportingdl_accountKey": {
+						"value": "[parameters('ls_adls_covidreportingdl_accountKey')]"
+					},
+					"ls_asa_covidreportingsa_connectionString": {
+						"value": "[parameters('ls_asa_covidreportingsa_connectionString')]"
+					},
+					"ls_adls_covidreportingdl_properties_typeProperties_url": {
+						"value": "[parameters('ls_adls_covidreportingdl_properties_typeProperties_url')]"
+					},
+					"ls_http_ecdc_properties_typeProperties_url": {
+						"value": "[parameters('ls_http_ecdc_properties_typeProperties_url')]"
+					},
+					"tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_relativeurl": {
+						"value": "[parameters('tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_relativeurl')]"
+					},
+					"tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_filename": {
+						"value": "[parameters('tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_filename')]"
+					},
+					"tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_baseurl": {
+						"value": "[parameters('tr_cases_deaths_properties_pl_ingest_ecdc_data_parameters_baseurl')]"
+					},
+					"tr_country_response_properties_pl_ingest_ecdc_data_parameters_relativeurl": {
+						"value": "[parameters('tr_country_response_properties_pl_ingest_ecdc_data_parameters_relativeurl')]"
+					},
+					"tr_country_response_properties_pl_ingest_ecdc_data_parameters_filename": {
+						"value": "[parameters('tr_country_response_properties_pl_ingest_ecdc_data_parameters_filename')]"
+					},
+					"tr_country_response_properties_pl_ingest_ecdc_data_parameters_baseurl": {
+						"value": "[parameters('tr_country_response_properties_pl_ingest_ecdc_data_parameters_baseurl')]"
+					},
+					"tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_relativeurl": {
+						"value": "[parameters('tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_relativeurl')]"
+					},
+					"tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_filename": {
+						"value": "[parameters('tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_filename')]"
+					},
+					"tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_baseurl": {
+						"value": "[parameters('tr_hospital_adm_properties_pl_ingest_ecdc_data_parameters_baseurl')]"
+					},
+					"tr_publish_daily_properties_typeProperties_scope": {
+						"value": "[parameters('tr_publish_daily_properties_typeProperties_scope')]"
+					},
+					"tr_testing_properties_pl_ingest_ecdc_data_parameters_relativeurl": {
+						"value": "[parameters('tr_testing_properties_pl_ingest_ecdc_data_parameters_relativeurl')]"
+					},
+					"tr_testing_properties_pl_ingest_ecdc_data_parameters_filename": {
+						"value": "[parameters('tr_testing_properties_pl_ingest_ecdc_data_parameters_filename')]"
+					},
+					"tr_testing_properties_pl_ingest_ecdc_data_parameters_baseurl": {
+						"value": "[parameters('tr_testing_properties_pl_ingest_ecdc_data_parameters_baseurl')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

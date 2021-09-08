@@ -1,0 +1,122 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "covidadf-01"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_ingest_ecdc_data_copy1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy Cases Death Data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "HttpReadSettings",
+									"requestMethod": "GET"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_ecdc_raw_csv_http",
+								"type": "DatasetReference",
+								"parameters": {
+									"relativeurl": {
+										"value": "@pipeline().parameters.relativeurl",
+										"type": "Expression"
+									},
+									"baseurl": {
+										"value": "@pipeline().parameters.baseurl",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_ecdc_raw_csv_dl",
+								"type": "DatasetReference",
+								"parameters": {
+									"filename": {
+										"value": "@pipeline().parameters.filename",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"parameters": {
+					"relativeurl": {
+						"type": "string",
+						"defaultValue": "covid19/testing/csv/data.csv"
+					},
+					"filename": {
+						"type": "string",
+						"defaultValue": "hospital_admission.csv"
+					},
+					"baseurl": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"isFinsihed": {
+						"type": "Boolean"
+					},
+					"fullUrl": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-09-08T13:38:13Z"
+			},
+			"dependsOn": []
+		}
+	]
+}
