@@ -1,0 +1,29 @@
+{
+	"name": "tr_country_response",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_ingest_ecdc_data",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"relativeurl": "/sites/default/files/documents/response_graphs_data_2021-08-26.csv",
+					"filename": "country_response.csv",
+					"baseurl": "https://www.ecdc.europa.eu"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 24,
+				"startTime": "2021-09-08T11:59:00",
+				"timeZone": "GMT Standard Time"
+			}
+		}
+	}
+}

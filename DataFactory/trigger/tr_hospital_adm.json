@@ -1,0 +1,30 @@
+{
+	"name": "tr_hospital_adm",
+	"properties": {
+		"description": "covid19/hospitalicuadmissionrates/csv/data.csv",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_ingest_ecdc_data",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"relativeurl": "covid19/hospitalicuadmissionrates/csv/data.csv",
+					"filename": "hospital_admission.csv",
+					"baseurl": "https://opendata.ecdc.europa.eu"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 24,
+				"startTime": "2021-09-08T11:10:00",
+				"timeZone": "GMT Standard Time"
+			}
+		}
+	}
+}
