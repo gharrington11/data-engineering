@@ -19,7 +19,15 @@
 					"name": "CountryLookUp"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "es_ecdc_processed_csv_dl1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "FilterEuropeData"
@@ -29,9 +37,12 @@
 				},
 				{
 					"name": "Pivot1"
+				},
+				{
+					"name": "Lookup1"
 				}
 			],
-			"script": "source(output(\n\t\tcountry as string,\n\t\tcountry_code as string,\n\t\tcontinent as string,\n\t\tpopulation as integer,\n\t\tindicator as string,\n\t\tweekly_count as integer,\n\t\tyear_week as string,\n\t\trate_14_day as double,\n\t\tcumulative_count as integer,\n\t\tsource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tlimit: 100,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['ecdc/cases_deaths.csv']) ~> casesdeaths\nsource(output(\n\t\tcountry as string,\n\t\tcountry_code_2_digit as string,\n\t\tcountry_code_3_digit as string,\n\t\tcontinent as string,\n\t\tpopulation as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tlimit: 100,\n\tignoreNoFilesFound: false) ~> CountryLookUp\ncasesdeaths filter(continent==\"Europe\") ~> FilterEuropeData\nFilterEuropeData select(mapColumn(\n\t\tindicator,\n\t\tcountry,\n\t\tcountry_code_3_dig = country_code,\n\t\tpopulation,\n\t\tweekly_count,\n\t\tyear_week,\n\t\tsource\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> Selectrequiredcolumns\nSelectrequiredcolumns pivot(groupBy(country,\n\t\tcountry_code_3_dig,\n\t\tpopulation,\n\t\tyear_week,\n\t\tsource),\n\tpivotBy(indicator, ['cases', 'deaths']),\n\tcount = sum(weekly_count),\n\tcolumnNaming: '$V_$N',\n\tlateral: true) ~> Pivot1"
+			"script": "source(output(\n\t\tcountry as string,\n\t\tcountry_code as string,\n\t\tcontinent as string,\n\t\tpopulation as integer,\n\t\tindicator as string,\n\t\tweekly_count as integer,\n\t\tyear_week as string,\n\t\trate_14_day as double,\n\t\tcumulative_count as integer,\n\t\tsource as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tlimit: 100,\n\tignoreNoFilesFound: false,\n\twildcardPaths:['ecdc/cases_deaths.csv']) ~> casesdeaths\nsource(output(\n\t\tcountry as string,\n\t\tcountry_code_2_digit as string,\n\t\tcountry_code_3_digit as string,\n\t\tcontinent as string,\n\t\tpopulation as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tlimit: 100,\n\tignoreNoFilesFound: false) ~> CountryLookUp\ncasesdeaths filter(continent==\"Europe\") ~> FilterEuropeData\nFilterEuropeData select(mapColumn(\n\t\tindicator,\n\t\tcountry,\n\t\tcountry_code_3_dig = country_code,\n\t\tpopulation,\n\t\tweekly_count,\n\t\tyear_week,\n\t\tsource\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> Selectrequiredcolumns\nSelectrequiredcolumns pivot(groupBy(country,\n\t\tcountry_code_3_dig,\n\t\tpopulation,\n\t\tyear_week,\n\t\tsource),\n\tpivotBy(indicator, ['cases', 'deaths']),\n\tcount = sum(weekly_count),\n\tcolumnNaming: '$V_$N',\n\tlateral: true) ~> Pivot1\nPivot1, CountryLookUp lookup(Pivot1@country == CountryLookUp@country,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> Lookup1\nLookup1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tumask: 0022,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tcountry = Pivot1@country,\n\t\tpopulation = Pivot1@population,\n\t\tyear_week,\n\t\tsource,\n\t\tcases_count,\n\t\tdeaths_count,\n\t\tcountry = CountryLookUp@country,\n\t\tcountry_code_2_digit,\n\t\tcountry_code_3_digit,\n\t\tpopulation = CountryLookUp@population\n\t)) ~> sink1"
 		}
 	}
 }

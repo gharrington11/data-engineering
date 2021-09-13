@@ -5,6 +5,12 @@
 			"referenceName": "ls_adls_covidreportingdl",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"lookup": {
+				"type": "string",
+				"defaultValue": "county_lookup.csv"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
